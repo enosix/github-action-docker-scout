@@ -26,8 +26,10 @@ inputs:
     description: 'Workspace ID'
     required: false
 outputs:
-  result:
-    description: 'Detailed results'
+  details:
+    description: 'Detailed output'
+  results:
+    description: 'Result output'
   summary:
       description: 'Summary of results'
 runs:
@@ -44,9 +46,11 @@ runs:
     - -c
     - >
       export EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64);
-      /docker-scout cves ${{ inputs.image }} -e --only-fixed -o out.log;
+      /docker-scout cves ${{ inputs.image }} --only-fixed -o details.log;
+      /docker-scout cves ${{ inputs.image }} -e --only-fixed --ignore-base -o out.log;
       exit_code=$?;
       /docker-scout quickview ${{ inputs.image }} -o summary.log; 
       echo \"summary<<$EOF\n$(cat summary.log 2>/dev/null)\n$EOF\" >> $GITHUB_OUTPUT;
-      echo \"result<<$EOF\n$(cat out.log 2>/dev/null)\n$EOF\" >> $GITHUB_OUTPUT;
+      echo \"details<<$EOF\n$(cat details.log 2>/dev/null)\n$EOF\" >> $GITHUB_OUTPUT;
+      echo \"results<<$EOF\n$(cat out.log 2>/dev/null)\n$EOF\" >> $GITHUB_OUTPUT;
       exit $exit_code
