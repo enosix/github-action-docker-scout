@@ -7,15 +7,8 @@ branding:
   color: blue
 
 inputs:
-  command:
-    description: 'Command to run'
-    required: true
-    default: 'cves'
-  image: 
+  image:
     description: 'Image'
-    required: false
-  args: 
-    description: 'Additional args passed to Docker Scout'
     required: false
   user: 
     description: 'Docker Hub User'
@@ -32,6 +25,11 @@ inputs:
   workspace: 
     description: 'Workspace ID'
     required: false
+outputs:
+  result:
+    description: 'Detailed results'
+  summary:
+      description: 'Summary of results'
 runs:
   using: docker
   image: docker://docker/scout-cli:latest
@@ -44,4 +42,11 @@ runs:
   entrypoint: /bin/sh
   args:
     - -c
-    - "/docker-scout ${{ inputs.command }} ${{ inputs.image }} ${{ inputs.args }}"
+    - >
+      export EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64);
+      /docker-scout cves ${{ inputs.image }} -e --only-fixed -o out.log;
+      exit_code=$?;
+      /docker-scout quickview ${{ inputs.image }} -o summary.log; 
+      echo \"summary<<$EOF\n$(cat summary.log 2>/dev/null)\n$EOF\" >> $GITHUB_OUTPUT;
+      echo \"result<<$EOF\n$(cat out.log 2>/dev/null)\n$EOF\" >> $GITHUB_OUTPUT;
+      exit $exit_code
