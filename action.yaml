@@ -50,13 +50,13 @@ runs:
       /docker-scout cves ${{ inputs.image }} -e --only-fixed --ignore-base -o out.log;
       exit_code=$?;
       /docker-scout quickview ${{ inputs.image }} -o summary.log; 
-      echo 'summary<<' $EOF >> $GITHUB_OUTPUT;
+      echo 'summary<<'$EOF >> $GITHUB_OUTPUT;
       cat summary.log 2>/dev/null  >> $GITHUB_OUTPUT;
       echo $EOF >> $GITHUB_OUTPUT;
-      echo 'details<<' $EOF >> $GITHUB_OUTPUT;
+      echo 'details<<'$EOF >> $GITHUB_OUTPUT;
       cat details.log 2>/dev/null >> $GITHUB_OUTPUT;
       echo $EOF >> $GITHUB_OUTPUT;
-      echo 'results<<' $EOF >> $GITHUB_OUTPUT;
+      echo 'results<<'$EOF >> $GITHUB_OUTPUT;
       cat out.log 2>/dev/null >> $GITHUB_OUTPUT;
       echo $EOF >> $GITHUB_OUTPUT;
       exit $exit_code
